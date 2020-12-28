@@ -52,15 +52,18 @@ app.get('/info', (request, response) =>
 
 app.post('/api/persons/', (request, response) => {
 
-    const genRandom = () => Math.floor(Math.random()*1000)
-
-    let id = genRandom()
-    while(!notes.find(note => note.id)) {
-        id = genRandom()
-    }
+    const id = Math.floor(Math.random()*1000)
 
     const note = request.body
     note.id = id
+
+    if (!note.name || note.name === '' || !note.number || note.number === '') {
+        return response.status(400).json({error: 'name or number missing'})
+    }
+
+    if (notes.find(n => n.name === note.name)) {
+        return response.status(400).json({error: `${note.name} already exists in the phonebook`})
+    }
 
     notes = notes.concat(note)
 
