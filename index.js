@@ -29,9 +29,18 @@ const notes = [
 app.get('/api/persons', (request, response) => 
     response.json(notes))
 
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    const note = notes.find(n => n.id === id)
+    if (note) {
+        response.json(note)
+    } else {
+        response.status(404).end()
+    }
+})
+
 app.get('/info', (request, response) =>
-    response
-    .send(`Phonebook has info for ${notes.length} people <br/><br/>
+    response.send(`Phonebook has info for ${notes.length} people <br/><br/>
     ${Date()}`))
 
 const PORT = 3001
