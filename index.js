@@ -24,11 +24,15 @@ const notes = [
         "number": "39-23-6423122",
         "id": 4
       }
-]
+    ]
 
 app.get('/api/persons', (request, response) => 
     response.json(notes))
 
+app.get('/info', (request, response) =>
+    response
+    .send(`Phonebook has info for ${notes.length} people <br/><br/>
+    ${Date()}`))
 
 const PORT = 3001
 app.listen(PORT, () => 
