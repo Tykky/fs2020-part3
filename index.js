@@ -49,6 +49,24 @@ app.get('/info', (request, response) =>
     response.send(`Phonebook has info for ${notes.length} people <br/><br/>
     ${Date()}`))
 
+
+app.post('/api/persons/', (request, response) => {
+
+    const genRandom = () => Math.floor(Math.random()*1000)
+
+    let id = genRandom()
+    while(!notes.find(note => note.id)) {
+        id = genRandom()
+    }
+
+    const note = request.body
+    note.id = id
+
+    notes = notes.concat(note)
+
+    response.json(note)
+})
+
 const PORT = 3001
 app.listen(PORT, () => 
     console.log(`Server running on port ${PORT}`))
