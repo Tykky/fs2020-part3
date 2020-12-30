@@ -14,11 +14,11 @@ DELETE http://localhost:3001/api/persons/5
 
 #########
 
-POST http://localhost:3001/api/persons
+PUT http://localhost:3001/api/persons/5feca53ff19189b9acb00346
 Content-Type: application/json
 
 {
     "name": "Arto Hellas",
-    "number": "040-123456"
+    "number": "040-11111111",
 }
       

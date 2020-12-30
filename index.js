@@ -39,18 +39,10 @@ app.get('/info', (request, response) =>
     response.send(`Phonebook has info for ${persons.length} people <br/><br/>
     ${Date()}`))
 
-app.put('/api/persons/:id', (request, response) => {
-    const person = request.body 
-
-    const Person = {
-        name: person.name,
-        number: person.number,
-        id: Number(request.params.id)
-    }
-
-    Person.findByIdAndUpdate(request.params.id, person, { runValidators: true, new: true})
+app.put('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndUpdate(request.params.id, { number: request.body.number }, { runValidators: true, new: true})
         .then(updatedPerson => {
-            response.json(updatePerson)
+            response.json(updatedPerson)
         })
         .catch(error => next(error))
 })
