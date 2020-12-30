@@ -1,6 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
+const Person = require('./models/person')
 
 const app = express()
 
@@ -15,7 +18,7 @@ morgan.token('content', request =>
 app.use(morgan(':method :url :status :res[content-length] :response-time ms :content'))
 
 
-let notes = [
+let persons = [
       {
         "name": "Arto Hellas",
         "number": "040-123456",
@@ -39,13 +42,14 @@ let notes = [
     ]
 
 app.get('/api/persons', (request, response) => 
-    response.json(notes))
+    Person.find({}).then(persons => 
+        response.json(persons)))
 
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    const note = notes.find(n => n.id === id)
-    if (note) {
-        response.json(note)
+    const person = persons.find(n => n.id === id)
+    if (person) {
+        response.json(person)
     } else {
         response.status(404).end()
     }
@@ -53,12 +57,12 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    notes = notes.filter(note => note.id !== id)
+    persons = persons.filter(person => person.id !== id)
     response.status(204).end()
 })
 
 app.get('/info', (request, response) =>
-    response.send(`Phonebook has info for ${notes.length} people <br/><br/>
+    response.send(`Phonebook has info for ${persons.length} people <br/><br/>
     ${Date()}`))
 
 
@@ -66,20 +70,28 @@ app.post('/api/persons/', (request, response) => {
 
     const id = Math.floor(Math.random()*1000)
 
-    const note = request.body
-    note.id = id
+    const body = request.body
+    body.id = id
 
-    if (!note.name || note.name === '' || !note.number || note.number === '') {
+    console.log(body)
+
+    if (!body.name || body.name === '' || !body.number || body.number === '') {
         return response.status(400).json({error: 'name or number missing'})
     }
 
-    if (notes.find(n => n.name === note.name)) {
-        return response.status(400).json({error: `${note.name} already exists in the phonebook`})
+    if (persons.find(n => n.name === body.name)) {
+        return response.status(400).json({error: `${body.name} already exists in the phonebook`})
     }
 
-    notes = notes.concat(note)
+    const person = new Person({
+        name: body.name,
+        number: body.number,
+        id: id
+    })
 
-    response.json(note)
+    person.save().then(savedPerson => 
+        response.json(savedPerson))
+
 })
 
 const PORT = process.env.PORT || 3001
